@@ -11,3 +11,16 @@
 1.2 创建login组件 在route.js配置路由
     -路由懒加载，减少首屏加载时间，需要使用时再加载对应的页面(单页面缺点首屏加载时间长)
     - component: ()=> import('@/....')
+1.3 登录页面布局修改样式 推荐使用自定义类名 修改样式
+1.4 rules属性定义添加验证规则，单独抽离一个js文件存rules
+1.5 封装登录请求API api/user.js
+    -有api内的接口文件更具后端接口文档划分
+    -post请求 axios会自动加上请求头参数默认为jaso 格式
+    // 1.yarn add axios
+    // 2.引入axios
+    // 3.配置axios
+1.6 目标需求 细分返回的error 给用户对应的提示 
+    - 1、可能是js报错 2.axios封装的error对象 if(error.response)
+    - error.response.data 后端返回的数据
+    - error.response.status 后端返回的状态码 
+    <!-- if(error.response && error.response.status === 400) -->

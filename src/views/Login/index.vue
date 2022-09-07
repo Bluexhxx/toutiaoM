@@ -4,18 +4,13 @@
     <van-nav-bar class="nav-bar" :title="$route.meta.title" />
     <!-- /头部导航栏 -->
     <!-- form表单 -->
-    <van-form @submit="onSubmit" class="from">
+    <van-form @submit="onSubmit" class="from" ref="form">
       <van-field
         v-model="mobile"
         name="mobile"
+        maxlength="11"
         placeholder="请输入手机号"
-        :rules="[
-          { required: true, message: '请填写手机号' },
-          {
-            pattern: mobilePa,
-            message: '手机号格式错误'
-          }
-        ]"
+        :rules="mobileRules"
       >
         <template #label>
           <span class="toutiao toutiao-shouji"></span>
@@ -25,19 +20,27 @@
         v-model="code"
         name="code"
         placeholder="请输入验证码"
-        :rules="[
-          { required: true, message: '请填写验证码' },
-          {
-            pattern: /[0-9]{6}/,
-            message: '验证码格式错误'
-          }
-        ]"
+        :rules="codeRules"
       >
         <template #label>
           <span class="toutiao toutiao-yanzhengma"></span>
         </template>
         <template #button>
-          <van-button size="small" color="#ededed">发送验证码</van-button>
+          <van-button
+            class="btn"
+            v-if="isBtnShow"
+            @click="onSendCode"
+            round
+            size="small"
+            native-type="button"
+            >发送验证码</van-button
+          >
+          <van-count-down
+            :time="3 * 1000"
+            format="ss秒"
+            v-else
+            @finish="isBtnShow = true"
+          />
         </template>
       </van-field>
       <div style="margin: 16px">
@@ -49,18 +52,75 @@
 </template>
 
 <script>
+import { mobileRules, codeRules } from './rule'
+import { loginApi, getCodeApi } from '@/api'
+import { mapMutations } from 'vuex'
 export default {
   data() {
     return {
-      mobilePa:
-        /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/,
+      mobileRules,
+      codeRules,
       mobile: '',
-      code: ''
+      code: '',
+      isBtnShow: true
     }
   },
   methods: {
-    onSubmit(values) {
-      console.log('submit', values)
+    ...mapMutations(['SET_TOKEN']), // 映射vuex mutations
+    //  vant submit事件 只有表单校验通过才能触发
+    async onSubmit(values) {
+      // 提示文案
+      this.loading()
+      // 调用api 发送登录请求
+      try {
+        const {
+          data: { data }
+        } = await loginApi(this.mobile, this.code)
+        console.log(data)
+        // 拿到token 存入 vuex
+        this.SET_TOKEN(data)
+        // this.$store.commit('SET_TOKEN', data)
+        this.$router.push('/profile') // 先路由跳转
+        this.$toast.success('登陆成功') // 在显示登录成功
+      } catch (err) {
+        // 细分错误提示用户
+        if (err.response && err.response.status === 400) {
+          const msg = err.response.data
+          this.$toast.fail(msg)
+        } else {
+          // console.dir(err)
+          this.$toast.clear()
+          throw err
+        }
+      }
+    },
+    loading() {
+      this.$toast.loading({
+        message: '加载中...',
+        forbidClick: true,
+        duration: 0
+      })
+    },
+    async onSendCode() {
+      // 0.验证是否输入有效手机号
+      await this.$refs.form.validate(['mobile'])
+      this.loading()
+      // 发送请求
+      try {
+        await getCodeApi(this.mobile)
+        this.$toast.success('获取验证码成功')
+        this.isBtnShow = false
+      } catch (error) {
+        if (
+          (error.response && error.response.status === 429) ||
+          error.response.status === 404
+        ) {
+          this.$toast.fail(error.response.data.message)
+        } else {
+          this.$toast.clear()
+          throw error
+        }
+      }
     }
   }
 }
@@ -89,6 +149,12 @@ export default {
   .van-cell__value {
     flex: 20;
   }
+  .btn {
+    height: 0.64rem;
+    color: black;
+    background-color: #eee;
+  }
 }
+
 /* /表单样式 */
 </style>
