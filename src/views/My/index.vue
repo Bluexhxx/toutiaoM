@@ -12,9 +12,9 @@
                 round
                 width="1.5rem"
                 height="1.5rem"
-                src="https://img01.yzcdn.cn/vant/cat.jpeg"
+                :src="userInfo.photo"
               />
-              <span class="userName">11121324</span>
+              <span class="userName">{{ userInfo.name }}</span>
             </van-row>
           </van-col>
           <van-col span="6"></van-col>
@@ -25,16 +25,16 @@
         <van-row>
           <van-grid class="diy-grid" :border="false">
             <van-grid-item text="头条">
-              <template #icon>0</template>
+              <template #icon>{{ userInfo.art_count }}</template>
             </van-grid-item>
             <van-grid-item text="粉丝">
-              <template #icon>0</template>
+              <template #icon>{{ userInfo.fans_count }}</template>
             </van-grid-item>
             <van-grid-item text="关注">
-              <template #icon>0</template>
+              <template #icon>{{ userInfo.follow_count }}</template>
             </van-grid-item>
             <van-grid-item text="获赞">
-              <template #icon>0</template>
+              <template #icon>{{ userInfo.like_count }}</template>
             </van-grid-item>
           </van-grid>
         </van-row>
@@ -76,10 +76,15 @@
 <script>
 import { mapGetters } from 'vuex'
 import mobileImg from '@/assets/images/mobile.png'
+import { getUserInfoApi } from '@/api'
 export default {
+  created() {
+    this.getUserInfo()
+  },
   data() {
     return {
-      mobileImg
+      mobileImg,
+      userInfo: {}
     }
   },
   computed: {
@@ -92,6 +97,22 @@ export default {
         message: '是否确认退出该账号'
       })
       this.$store.commit('SET_TOKEN', {})
+    },
+    async getUserInfo() {
+      try {
+        if (!this.isLogin) return
+        const { data } = await getUserInfoApi()
+        this.userInfo = data.data
+      } catch (error) {
+        // error
+        // 1.js导致的 2.axios导致的
+        // js 和400,507 给coder ，401给user
+        if (error.response && error.response.status === 401) {
+          this.$toast.fail('用户认证失败，请重新登录')
+        } else {
+          throw error
+        }
+      }
     }
   }
 }
@@ -104,7 +125,7 @@ export default {
   .diy-group {
     margin: 20px 0;
   }
-  .userName{
+  .userName {
     color: #fff;
     font-size: 34px;
   }
