@@ -112,7 +112,9 @@ export default {
         this.isBtnShow = false
       } catch (error) {
         if (
-          (error.response && error.response.status === 429) ||
+          // ? ? 一个问号可选链操作符 问号前面是undefined 那不么不会往后取值
+          // (error.response && error.response.status === 429)
+          (error.response?.status === 429) ||
           error.response.status === 404
         ) {
           this.$toast.fail(error.response.data.message)
