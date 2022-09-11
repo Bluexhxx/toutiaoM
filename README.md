@@ -24,3 +24,6 @@
     - error.response.data 后端返回的数据
     - error.response.status 后端返回的状态码 
     <!-- if(error.response && error.response.status === 400) -->
+<!-- 9.9 -->
+2.0 使用vuex state 持久化插件 存token
+2.1 
