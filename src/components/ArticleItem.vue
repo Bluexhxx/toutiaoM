@@ -21,7 +21,7 @@
     </van-cell>
 
     <!-- 三张图片 -->
-    <van-cell v-else >
+    <van-cell v-else>
       <van-image
         width="100"
         height="100"
@@ -35,6 +35,7 @@
 </template>
 
 <script>
+import dayjs from '@/utils/dayjs'
 export default {
   props: {
     article: {
@@ -46,7 +47,7 @@ export default {
     label() {
       /* eslint-disable */
       const { aut_name, comm_count, pubdate } = this.article
-      return `${aut_name}${comm_count}评论${pubdate}`
+      return `${aut_name}${comm_count}评论${dayjs(pubdate).format('YYYY-MM-DD')}${dayjs(pubdate).fromNow()}`
     }
   }
 }
