@@ -29,17 +29,24 @@
     >
       <!-- 频道编辑组件 -->
       <channel-edit
+        v-if="isShow"
         @change-active=";[(isShow = false), (active = $event)]"
         :my-channels="channels"
+        @del-myChannel="delChannelFn"
+        @add-channel="addChannelFn"
       ></channel-edit>
     </van-popup>
   </div>
 </template>
 
 <script>
-import { getChannelApi } from '@/api'
+// 数据持久化方案
+// 1.用户登录了 + 在线上服务器操作
+// 2.用户未登录路 ，获取默认的频道数据 + 在本地存储操作的频道数据
+import { getChannelApi, deleteChannelApi, addChannelApi } from '@/api'
 import ArticleList from '@/components/ArticleList.vue'
 import ChannelEdit from '@/views/Home/components/ChannelEdit.vue'
+import { mapGetters, mapMutations } from 'vuex'
 export default {
   components: { ArticleList, ChannelEdit },
   data() {
@@ -50,9 +57,30 @@ export default {
     }
   },
   created() {
-    this.getChannel()
+    // this.getChannel()
+    this.initChannels()
+  },
+  computed: {
+    ...mapGetters(['isLogin'])
   },
   methods: {
+    initChannels() {
+      if (this.isLogin) {
+        // 1.如果用户登录了
+        // - channels应该发请求获取用户自己的频道
+        this.getChannel()
+      } else {
+        // 2.没有登录就获取本地存储的频道
+        // 判断本地是否有频道数据
+        const myChannels = this.$store.state.myChannels
+        if (myChannels.length === 0) {
+          this.getChannel()
+        } else {
+          this.channels = myChannels
+        }
+      }
+    },
+    ...mapMutations(['SET_MY_CHANNELS']),
     async getChannel() {
       try {
         const {
@@ -70,6 +98,49 @@ export default {
           error.response?.status === 507 && this.$toast.fail('服务端异常请刷新')
           // ??  相当于 ||
           // status === 507 && this.$toast.fail('服务端异常请刷新')
+        }
+      }
+    },
+    async delChannelFn($event) {
+      // 1.发起请求删除接口
+      try {
+        // 如果用户登录了
+        const newChannels = this.channels.filter((item) => item.id !== $event)
+        if (this.isLogin) {
+          // 操作线上的用户频道数据
+          await deleteChannelApi($event)
+        } else {
+          this.SET_MY_CHANNELS(newChannels)
+          // 在本地存储 频道数据
+        }
+        // 2.视图层删除频道
+        this.channels = newChannels
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          this.$toast.fail('请先登录，无法删除')
+        } else {
+          throw error
+        }
+      }
+    },
+    async addChannelFn(channel) {
+      try {
+        if (this.isLogin) {
+          await addChannelApi(channel.id, this.channels.length)
+        } else {
+          // 本地存储
+          // 存操作后的最新的channels 数据
+          // 用vue state 持久化插件 同步到localstorage
+          this.SET_MY_CHANNELS([...this.channels, channel])
+        }
+        // 1.视图层添加频道
+        this.channels.push(channel)
+        // 2.发起请求添加接口
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          this.$toast.fail('先登录再添加')
+        } else {
+          throw error
         }
       }
     }

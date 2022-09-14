@@ -36,6 +36,7 @@
           :key="item.id"
           :text="item.name"
           icon="plus"
+          @click="$emit('add-channel', item)"
         >
         </van-grid-item>
       </van-grid>
@@ -63,9 +64,10 @@ export default {
       const { data } = await getAllChannelsApi()
       this.allChannels = data.data.channels
     },
-    handleMyChannel({ name }, index) {
+    handleMyChannel({ name, id }, index) {
       if (this.isEdit && name !== '推荐') {
         console.log('删除' + name)
+        this.$emit('del-myChannel', id)
       } else {
         // 不是编辑状态直接跳转到对相应的频道下
         // 触发定义在父组件中的事件
