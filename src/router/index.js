@@ -33,6 +33,10 @@ const routes = [
     meta: {
       title: '登录'
     }
+  },
+  {
+    path: '/search',
+    component: () => import(/* webpackChunkName:"Search" */'@/views/Search')
   }
 ]
 

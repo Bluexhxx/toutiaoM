@@ -1,9 +1,9 @@
 <template>
   <div>
     <!-- 搜索框 -->
-    <van-nav-bar class="diy-nav-bar">
+    <van-nav-bar class="diy-nav-bar" >
       <template #title>
-        <van-button type="default" icon="search" round block>搜索</van-button>
+        <van-button @click="$router.push('/search')" type="default" icon="search" round block>搜索</van-button>
       </template>
     </van-nav-bar>
     <!-- 频道及文章展示 -->
