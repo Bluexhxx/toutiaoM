@@ -15,11 +15,13 @@ const routes = [
       },
       {
         path: '/video', // 加一个空格 二级
-        component: () => import(/* webpackChunkName:"emptyChunk" */ '@/views/Video')
+        component: () =>
+          import(/* webpackChunkName:"emptyChunk" */ '@/views/Video')
       },
       {
         path: '/qa', // 加一个空格 二级
-        component: () => import(/* webpackChunkName:"emptyChunk" */ '@/views/QA')
+        component: () =>
+          import(/* webpackChunkName:"emptyChunk" */ '@/views/QA')
       },
       {
         path: '/profile', // 加一个空格 二级
@@ -36,7 +38,11 @@ const routes = [
   },
   {
     path: '/search',
-    component: () => import(/* webpackChunkName:"Search" */'@/views/Search')
+    component: () => import(/* webpackChunkName:"Search" */ '@/views/Search')
+  },
+  {
+    path: '/user',
+    component: () => import('@/views/User')
   }
 ]
 

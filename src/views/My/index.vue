@@ -19,7 +19,7 @@
           </van-col>
           <van-col span="6"></van-col>
           <van-col span="6">
-            <van-button round class="diy-eidt-btn">编辑资料</van-button>
+            <van-button round class="diy-eidt-btn" @click="$router.push('/user')">编辑资料</van-button>
           </van-col>
         </van-row>
         <van-row>
