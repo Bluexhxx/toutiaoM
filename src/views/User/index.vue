@@ -11,6 +11,26 @@
     <van-cell title="头像" is-link @click="$refs.file.click()">
       <van-image round width="0.8rem" height="0.8rem" :src="avator" />
     </van-cell>
+    <van-cell
+      title="昵称"
+      :value="userProfile.name"
+      is-link
+      @click="isShowUpdateName = !isShowUpdateName"
+      @close="isShowUpdateName = false"
+    ></van-cell>
+    <van-cell
+      title="性别"
+      :value="userProfile.gender ? '女' : '男'"
+      is-link
+      @click="isShowGender = !isShowGender"
+      @close="isShowGender = false"
+    ></van-cell>
+    <van-cell
+      title="生日"
+      :value="userProfile.birthday"
+      is-link
+      @click="isShowBirthday = !isShowBirthday"
+    ></van-cell>
     <!-- 编辑头像的弹出层 -->
     <!-- input 原生js accept="" 可以接受的文件类型属性 -->
     <input
@@ -33,6 +53,50 @@
         :photo="photo"
         :avator.sync="avator"
       ></update-avator>
+      <!-- 昵称修改 -->
+    </van-popup>
+    <!-- 更改昵称 -->
+    <van-popup
+      v-model="isShowUpdateName"
+      position="bottom"
+      :style="{ height: '100%' }"
+      @close="getUserProfile()"
+    >
+      <!-- 这里是弹出层的内容抽成组件 -->
+      <update-name
+        v-if="isShowUpdateName"
+        v-model="userProfile.name"
+        @close="isShowUpdateName = false"
+      ></update-name>
+      <!-- 昵称修改 -->
+    </van-popup>
+
+    <!-- 更改性别 -->
+    <van-popup
+      v-model="isShowGender"
+      position="bottom"
+      :style="{ height: '50%' }"
+    >
+      <!-- 这里是弹出层的内容抽成组件 -->
+      <upate-gender
+        v-model="userProfile.gender"
+        @close="isShowGender = false"
+      ></upate-gender>
+    </van-popup>
+
+    <!-- 更改生日 -->
+    <van-popup
+      v-model="isShowBirthday"
+      position="bottom"
+      :style="{ height: '50%' }"
+      @open="onOpen"
+    >
+      <!-- 这里是弹出层的内容抽成组件 -->
+      <update-birthday
+        :localBirth="userProfile.birthday"
+        @close="isShowBirthday = false"
+        v-model="userProfile.birthday"
+      ></update-birthday>
     </van-popup>
   </div>
 </template>
@@ -40,14 +104,26 @@
 <script>
 import { resolveFileToBase64 } from '@/utils/resolveFileBase64'
 import UpdateAvator from './cpns/UpdateAvator.vue'
+import UpdateName from './cpns/UpdateName.vue'
+import UpateGender from './cpns/UpateGender.vue'
+import UpdateBirthday from './cpns/UpdateBirthday.vue'
+import { getUserProfileAPI, editUserProfileAPI } from '@/api'
+
 export default {
-  components: { UpdateAvator },
+  components: { UpdateAvator, UpdateName, UpateGender, UpdateBirthday },
   data() {
     return {
       isShowPhoto: false,
+      isShowUpdateName: false,
+      isShowGender: false,
+      isShowBirthday: false,
       photo: '',
-      avator: ''
+      avator: '',
+      userProfile: {}
     }
+  },
+  created() {
+    this.getUserProfile()
   },
   methods: {
     async selectPhoto() {
@@ -71,9 +147,23 @@ export default {
 
       //! 解决不能连续选择同一张图片的bug 因为绑定的是change 事件 value 值没有改变
       this.$refs.file.value = ''
-
-      //  关闭弹层
-      this.$parent.$parent.isShowPhoto = false
+    },
+    async getUserProfile() {
+      try {
+        const { data } = await getUserProfileAPI()
+        this.userProfile = data.data
+        console.log(this.userProfile)
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    async editUserProfile() {
+      const { data } = await editUserProfileAPI()
+      console.log(data)
+    },
+    changeInfo() {},
+    onOpen() {
+      // this.$refs.birthDate.setValues(this.userProfile.birthday)
     }
   }
 }

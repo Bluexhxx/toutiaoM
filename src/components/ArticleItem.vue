@@ -5,6 +5,7 @@
       v-if="article.cover.type === 0"
       :title="article.title"
       :label="label"
+      :to="`/detail/${article.art_id}`"
       >0</van-cell
     >
     <!-- 一张图片 -->
@@ -12,6 +13,7 @@
       v-else-if="article.cover.type === 1"
       :title="article.title"
       :label="label"
+      :to="`/detail/${article.art_id}`"
     >
       <van-image
         width="100"
@@ -21,7 +23,8 @@
     </van-cell>
 
     <!-- 三张图片 -->
-    <van-cell v-else>
+
+    <van-cell v-else :to="`/detail/${article.art_id}`">
       <van-image
         width="100"
         height="100"
@@ -47,7 +50,9 @@ export default {
     label() {
       /* eslint-disable */
       const { aut_name, comm_count, pubdate } = this.article
-      return `${aut_name}${comm_count}评论${dayjs(pubdate).format('YYYY-MM-DD')}${dayjs(pubdate).fromNow()}`
+      return `${aut_name}${comm_count}评论${dayjs(pubdate).format(
+        'YYYY-MM-DD'
+      )}${dayjs(pubdate).fromNow()}`
     }
   }
 }

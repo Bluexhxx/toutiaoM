@@ -16,3 +16,13 @@ export const getArticlesApi = (id, timestamp) => {
     }
   })
 }
+/**
+ * 获取新闻详情
+ * @param {String | Number} articleId 文章id
+ * @returns Promise
+ */
+export const getNewsDetailsAPI = (articleId) => {
+  return request({
+    url: `/v1_0/articles/${articleId}`
+  })
+}

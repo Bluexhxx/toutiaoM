@@ -41,6 +41,8 @@ export default {
         const { data } = await uploadImg(blob)
         console.log(data.data.photo)
         this.$emit('update:avator', data.data.photo)
+        //  关闭弹层
+        this.$parent.$parent.isShowPhoto = false
       })
     }
   }
