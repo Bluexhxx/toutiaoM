@@ -107,7 +107,7 @@ import UpdateAvator from './cpns/UpdateAvator.vue'
 import UpdateName from './cpns/UpdateName.vue'
 import UpateGender from './cpns/UpateGender.vue'
 import UpdateBirthday from './cpns/UpdateBirthday.vue'
-import { getUserProfileAPI, editUserProfileAPI } from '@/api'
+import { getUserProfileAPI } from '@/api'
 
 export default {
   components: { UpdateAvator, UpdateName, UpateGender, UpdateBirthday },
@@ -157,11 +157,6 @@ export default {
         console.log(error)
       }
     },
-    async editUserProfile() {
-      const { data } = await editUserProfileAPI()
-      console.log(data)
-    },
-    changeInfo() {},
     onOpen() {
       // this.$refs.birthDate.setValues(this.userProfile.birthday)
     }

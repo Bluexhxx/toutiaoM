@@ -99,3 +99,80 @@ export const editUserBirthdayAPI = (birthday) => {
     }
   })
 }
+/**
+ * 关注用户
+ * @param {String} target 关注用户的id
+ * @returns Promise
+ */
+export const followUserAPI = (target) => {
+  return request({
+    url: '/v1_0/user/followings',
+    method: 'POST',
+    data: {
+      target
+    }
+  })
+}
+/**
+ * 取消关注
+ * @param {String} target 用户id
+ * @returns Promise
+ */
+export const unfollowUserAPI = (target) => {
+  return request({
+    url: `/v1_0/user/followings/${target}`,
+    method: 'DELETE'
+  })
+}
+
+/**
+ * 收藏文章
+ * @param {String} target 收藏的目标文章id
+ * @returns Promise
+ */
+export const favoriteArticlesAPI = (target) => {
+  return request({
+    url: '/v1_0/article/collections',
+    method: 'POST',
+    data: {
+      target
+    }
+  })
+}
+/**
+ * 取消收藏文章
+ * @param {String} target 取消收藏的目标文章id
+ * @returns Promise
+ */
+export const unfavoriteArticlesAPI = (target) => {
+  return request({
+    url: `/v1_0/user/followings/${target}`,
+    method: 'DELETE'
+  })
+}
+
+/**
+ * 点赞文章
+ * @param {String} target 点赞的目标文章id
+ * @returns Promise
+ */
+export const likeArticleAPI = (target) => {
+  return request({
+    url: '/v1_0/article/likings',
+    method: 'POST',
+    data: {
+      target
+    }
+  })
+}
+/**
+ * 取消点赞文章
+ * @param {String} target 取消点赞的目标文章id
+ * @returns Promise
+ */
+export const unlikeArticleAPI = (target) => {
+  return request({
+    url: `/v1_0/article/likings/${target}`,
+    method: 'DELETE'
+  })
+}
